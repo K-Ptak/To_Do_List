@@ -34,6 +34,7 @@ public class FileHelper {
             FileInputStream fis = context.openFileInput(FILENAME);
             ObjectInputStream ois = new ObjectInputStream(fis);
             itemList = (ArrayList<String>) ois.readObject();
+            ois.close();
 
         } catch (FileNotFoundException e) {
             itemList = new ArrayList<>();

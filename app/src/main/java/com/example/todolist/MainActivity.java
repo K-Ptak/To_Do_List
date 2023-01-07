@@ -7,7 +7,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,5 +56,10 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
         });
+
+        File file = new File("listinfoa.dat");
+        if (!file.exists()){
+            Toast.makeText(getApplicationContext(), "File listinfoa.dat was not found", Toast.LENGTH_LONG).show();
+        }
     }
 }

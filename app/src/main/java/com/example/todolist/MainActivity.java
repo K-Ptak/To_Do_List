@@ -1,6 +1,5 @@
 package com.example.todolist;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -9,16 +8,18 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.fragment.app.DialogFragment;
+
 import java.io.File;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AlertDialogFragment.AlertDialogListener{
 
     EditText item;
     Button add;
     ListView listView;
     ArrayList<String> itemList = new ArrayList<>();
-    ArrayAdapter<String> arrayAdapter;
+    ArrayAdapter arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,18 +44,8 @@ public class MainActivity extends AppCompatActivity {
             arrayAdapter.notifyDataSetChanged();
         });
         listView.setOnItemClickListener((adapterView, view, position, id) -> {
-            AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-            alert.setTitle("Delete");
-            alert.setMessage("Do you want to delete this item from the list?");
-            alert.setCancelable(false);
-            alert.setNegativeButton("No", (dialog, which) -> dialog.cancel());
-            alert.setPositiveButton("Yes", (dialog, which) -> {
-                itemList.remove(position);
-                arrayAdapter.notifyDataSetChanged();
-                FileHelper.writeData(itemList, getApplicationContext());
-            });
-            AlertDialog alertDialog = alert.create();
-            alertDialog.show();
+                    DialogFragment alertDialogFragment = new AlertDialogFragment(position);
+                    alertDialogFragment.show(getSupportFragmentManager(), AlertDialogFragment.TAG + position);
         });
 
         File file = new File("listinfoa.dat");
@@ -62,4 +53,12 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "File listinfoa.dat was not found", Toast.LENGTH_LONG).show();
         }
     }
+
+    @Override
+    public void apply(int position) {
+        itemList.remove(position);
+        arrayAdapter.notifyDataSetChanged();
+        FileHelper.writeData(itemList, getApplicationContext());
+    }
+
 }

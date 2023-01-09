@@ -5,10 +5,9 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,9 +16,10 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
 
     EditText item;
     Button add;
-    ListView listView;
     ArrayList<String> itemList = new ArrayList<>();
     ArrayAdapter arrayAdapter;
+    RecyclerView rv;
+    RVAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,13 +28,12 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
 
         item = findViewById(R.id.editText);
         add = findViewById(R.id.button);
-        listView = findViewById(R.id.list);
+        rv = findViewById(R.id.rv); //RecycleView
+
 
         itemList = FileHelper.readData(this);
 
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, itemList);
-
-        listView.setAdapter(arrayAdapter);
 
         add.setOnClickListener(v -> {
             String itemName = item.getText().toString();
@@ -42,11 +41,12 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
             item.setText("");
             FileHelper.writeData(itemList, getApplicationContext());
             arrayAdapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
         });
-        listView.setOnItemClickListener((adapterView, view, position, id) -> {
-                    DialogFragment alertDialogFragment = new AlertDialogFragment(position);
-                    alertDialogFragment.show(getSupportFragmentManager(), AlertDialogFragment.TAG + position);
-        });
+
+        itemList.add("abde");
+        adapter = new RVAdapter(itemList, getSupportFragmentManager());
+        rv.setAdapter(adapter);
 
         File file = new File("listinfoa.dat");
         if (!file.exists()){
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
     @Override
     public void apply(int position) {
         itemList.remove(position);
-        arrayAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
         FileHelper.writeData(itemList, getApplicationContext());
     }
 
